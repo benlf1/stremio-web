@@ -34,6 +34,7 @@ const StreamsList = ({ className, ...props }) => {
                                     stream
                                 }
                             });
+                            console.log(stream)
                         },
                         addonName: streams.addon.manifest.name
                     }))
@@ -51,6 +52,11 @@ const StreamsList = ({ className, ...props }) => {
                 :
                 [];
     }, [streamsByAddon, selectedAddon]);
+
+    for(const i of filteredStreams) {
+        i.deepLinks.player = "vlc-x-callback://x-callback-url/ACTION?url=" + encodeURIComponent(i.url)
+        console.log(i)
+    }
     const selectableOptions = React.useMemo(() => {
         return {
             title: 'Select Addon',
