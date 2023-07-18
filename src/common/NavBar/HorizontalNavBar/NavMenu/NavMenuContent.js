@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2022 Smart code 203358507
+// Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
 const PropTypes = require('prop-types');
@@ -44,7 +44,10 @@ const NavMenuContent = ({ onClick }) => {
                         backgroundImage: profile.auth === null ?
                             `url('${require('/images/anonymous.png')}')`
                             :
-                            `url('${profile.auth.user.avatar}'), url('${require('/images/default_avatar.png')}')`
+                            profile.auth.user.avatar ?
+                                `url('${profile.auth.user.avatar}')`
+                                :
+                                `url('${require('/images/default_avatar.png')}')`
                     }}
                 />
                 <div className={styles['email-container']}>

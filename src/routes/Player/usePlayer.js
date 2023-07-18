@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2022 Smart code 203358507
+// Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
 const { useServices } = require('stremio/services');
@@ -96,14 +96,6 @@ const usePlayer = (urlParams, videoParams) => {
             }
         }, 'player');
     }, []);
-    const pushToLibrary = React.useCallback(() => {
-        core.transport.dispatch({
-            action: 'Player',
-            args: {
-                action: 'PushToLibrary'
-            }
-        }, 'player');
-    }, []);
     const ended = React.useCallback(() => {
         core.transport.dispatch({
             action: 'Player',
@@ -122,7 +114,7 @@ const usePlayer = (urlParams, videoParams) => {
         }, 'player');
     }, []);
     const player = useModelState({ model: 'player', action, map });
-    return [player, timeChanged, pausedChanged, ended, pushToLibrary];
+    return [player, timeChanged, pausedChanged, ended];
 };
 
 module.exports = usePlayer;

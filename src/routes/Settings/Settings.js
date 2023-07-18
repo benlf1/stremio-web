@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2022 Smart code 203358507
+// Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
 const classnames = require('classnames');
@@ -35,10 +35,10 @@ const Settings = () => {
         subtitlesOutlineColorInput,
         audioLanguageSelect,
         seekTimeDurationSelect,
+        playInExternalPlayerSelect,
         nextVideoPopupDurationSelect,
         bingeWatchingCheckbox,
         playInBackgroundCheckbox,
-        playInExternalPlayerCheckbox,
         hardwareDecodingCheckbox,
         streamingServerUrlInput
     } = useProfileSettingsInputs(profile);
@@ -209,7 +209,10 @@ const Settings = () => {
                                     backgroundImage: profile.auth === null ?
                                         `url('${require('/images/anonymous.png')}')`
                                         :
-                                        `url('${profile.auth.user.avatar}'), url('${require('/images/default_avatar.png')}')`
+                                        profile.auth.user.avatar ?
+                                            `url('${profile.auth.user.avatar}')`
+                                            :
+                                            `url('${require('/images/default_avatar.png')}')`
                                 }}
                             />
                             <div className={styles['email-logout-container']}>
@@ -396,11 +399,9 @@ const Settings = () => {
                             <div className={styles['option-name-container']}>
                                 <div className={styles['label']}>{ t('SETTINGS_PLAY_IN_EXTERNAL_PLAYER') }</div>
                             </div>
-                            <Checkbox
-                                className={classnames(styles['option-input-container'], styles['checkbox-container'])}
-                                disabled={true}
-                                tabIndex={-1}
-                                {...playInExternalPlayerCheckbox}
+                            <Multiselect
+                                className={classnames(styles['option-input-container'], styles['multiselect-container'])}
+                                {...playInExternalPlayerSelect}
                             />
                         </div>
                         <div className={styles['option-container']}>

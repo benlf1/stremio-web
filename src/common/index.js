@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2022 Smart code 203358507
+// Copyright (C) 2017-2023 Smart code 203358507
 
 const AddonDetailsModal = require('./AddonDetailsModal');
 const Button = require('./Button');
@@ -27,8 +27,8 @@ const comparatorWithPriorities = require('./comparatorWithPriorities');
 const CONSTANTS = require('./CONSTANTS');
 const { withCoreSuspender, useCoreSuspender } = require('./CoreSuspender');
 const getVisibleChildrenRange = require('./getVisibleChildrenRange');
-const interfaceLanguages = require('./interfaceLanguages');
-const languageNames = require('./languageNames');
+const interfaceLanguages = require('./interfaceLanguages.json');
+const languageNames = require('./languageNames.json');
 const routesRegexp = require('./routesRegexp');
 const translateOption = require('./translateOption');
 const useAnimationFrame = require('./useAnimationFrame');
@@ -40,6 +40,8 @@ const useOnScrollToBottom = require('./useOnScrollToBottom');
 const useProfile = require('./useProfile');
 const useStreamingServer = require('./useStreamingServer');
 const useTorrent = require('./useTorrent');
+const platform = require('./platform');
+const externalPlayerOptions = require('./externalPlayerOptions');
 
 module.exports = {
     AddonDetailsModal,
@@ -84,5 +86,7 @@ module.exports = {
     useOnScrollToBottom,
     useProfile,
     useStreamingServer,
-    useTorrent
+    useTorrent,
+    platform,
+    externalPlayerOptions,
 };

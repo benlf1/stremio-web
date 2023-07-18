@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2022 Smart code 203358507
+// Copyright (C) 2017-2023 Smart code 203358507
 
 if (typeof process.env.SENTRY_DSN === 'string') {
     const Sentry = require('@sentry/browser');
@@ -38,7 +38,7 @@ root.render(<App />);
 
 if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('service-worker.js')
             .catch((registrationError) => {
                 console.error('SW registration failed: ', registrationError);
             });

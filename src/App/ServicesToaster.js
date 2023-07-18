@@ -1,4 +1,4 @@
-// Copyright (C) 2017-2022 Smart code 203358507
+// Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
 const { useServices } = require('stremio/services');
@@ -46,6 +46,14 @@ const ServicesToaster = () => {
                     toast.show({
                         type: 'success',
                         title: 'Magnet link parsed',
+                        timeout: 4000
+                    });
+                    break;
+                }
+                case 'PlayingOnDevice': {
+                    toast.show({
+                        type: 'success',
+                        title: `Stream opened in ${args.device}`,
                         timeout: 4000
                     });
                     break;

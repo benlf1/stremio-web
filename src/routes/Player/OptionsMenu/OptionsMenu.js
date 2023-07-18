@@ -1,35 +1,37 @@
-// Copyright (C) 2017-2022 Smart code 203358507
+// Copyright (C) 2017-2023 Smart code 203358507
 
 const React = require('react');
 const PropTypes = require('prop-types');
 const classnames = require('classnames');
-const Icon = require('@stremio/stremio-icons/dom');
-const { Button, useToast } = require('stremio/common');
-// const { useServices } = require('stremio/services');
+const { useTranslation } = require('react-i18next');
+const { useToast } = require('stremio/common');
+const { useServices } = require('stremio/services');
+const Option = require('./Option');
 const styles = require('./styles');
 
-const OptionsMenu = ({ className, stream }) => {
-    // const { core } = useServices();
+const OptionsMenu = ({ className, stream, playbackDevices }) => {
+    const { t } = useTranslation();
+    const { core } = useServices();
     const toast = useToast();
-    const streamUrl = React.useMemo(() => {
+    const [streamingUrl, downloadUrl] = React.useMemo(() => {
         return stream !== null ?
             stream.deepLinks &&
             stream.deepLinks.externalPlayer &&
-            typeof stream.deepLinks.externalPlayer.download === 'string' ?
-                stream.deepLinks.externalPlayer.download
-                :
-                null
+            [stream.deepLinks.externalPlayer.streaming, stream.deepLinks.externalPlayer.download]
             :
-            null;
+            [null, null];
     }, [stream]);
+    const externalDevices = React.useMemo(() => {
+        return playbackDevices.filter(({ type }) => type === 'external');
+    }, [playbackDevices]);
     const onCopyStreamButtonClick = React.useCallback(() => {
-        if (streamUrl !== null) {
-            navigator.clipboard.writeText(streamUrl)
+        if (streamingUrl || downloadUrl) {
+            navigator.clipboard.writeText(streamingUrl || downloadUrl)
                 .then(() => {
                     toast.show({
                         type: 'success',
                         title: 'Copied',
-                        message: 'Stream link was copied to your clipboard',
+                        message: t('PLAYER_COPY_STREAM_SUCCESS'),
                         timeout: 3000
                     });
                 })
@@ -37,56 +39,79 @@ const OptionsMenu = ({ className, stream }) => {
                     console.error(e);
                     toast.show({
                         type: 'error',
-                        title: 'Error',
-                        message: `Failed to copy stream link: ${streamUrl}`,
+                        title: t('Error'),
+                        message: `${t('PLAYER_COPY_STREAM_ERROR')}: ${streamingUrl || downloadUrl}`,
                         timeout: 3000
                     });
                 });
         }
-    }, [streamUrl]);
+    }, [streamingUrl, downloadUrl]);
     const onDownloadVideoButtonClick = React.useCallback(() => {
-        if (streamUrl !== null) {
-            window.open(streamUrl);
+        if (streamingUrl || downloadUrl) {
+            window.open(streamingUrl || downloadUrl);
         }
-    }, [streamUrl]);
-    // const onExternalPlayerButtonClick = React.useCallback(() => {
-    //     if (streamUrl !== null) {
-    //         core.transport.dispatch({
-    //             action: 'StreamingServer',
-    //             args: {
-    //                 action: 'PlayOnDevice',
-    //                 args: {
-    //                     device: 'vlc',
-    //                     source: streamUrl,
-    //                 }
-    //             }
-    //         });
-    //     }
-    // }, [streamUrl]);
+    }, [streamingUrl, downloadUrl]);
+    const onExternalDeviceRequested = React.useCallback((deviceId) => {
+        if (streamingUrl) {
+            core.transport.dispatch({
+                action: 'StreamingServer',
+                args: {
+                    action: 'PlayOnDevice',
+                    args: {
+                        device: deviceId,
+                        source: streamingUrl,
+                    }
+                }
+            });
+        }
+    }, [streamingUrl]);
     const onMouseDown = React.useCallback((event) => {
         event.nativeEvent.optionsMenuClosePrevented = true;
     }, []);
     return (
         <div className={classnames(className, styles['options-menu-container'])} onMouseDown={onMouseDown}>
-            <Button className={classnames(styles['option-container'], { 'disabled': stream === null })} disabled={stream === null} onClick={onCopyStreamButtonClick}>
-                <Icon className={styles['icon']} icon={'ic_link'} />
-                <div className={styles['label']}>Copy Stream Link</div>
-            </Button>
-            <Button className={classnames(styles['option-container'], { 'disabled': stream === null })} disabled={stream === null}onClick={onDownloadVideoButtonClick}>
-                <Icon className={styles['icon']} icon={'ic_downloads'} />
-                <div className={styles['label']}>Download Video</div>
-            </Button>
-            {/* <Button className={classnames(styles['option-container'], { 'disabled': stream === null })} disabled={stream === null} onClick={onExternalPlayerButtonClick}>
-                <Icon className={styles['icon']} icon={'ic_vlc'} />
-                <div className={styles['label']}>Play in External Player</div>
-            </Button> */}
+            {
+                streamingUrl || downloadUrl ?
+                    <Option
+                        icon={'ic_link'}
+                        label={t('CTX_COPY_STREAM_LINK')}
+                        disabled={stream === null}
+                        onClick={onCopyStreamButtonClick}
+                    />
+                    :
+                    null
+            }
+            {
+                streamingUrl || downloadUrl ?
+                    <Option
+                        icon={'ic_downloads'}
+                        label={t('CTX_DOWNLOAD_VIDEO')}
+                        disabled={stream === null}
+                        onClick={onDownloadVideoButtonClick}
+                    />
+                    :
+                    null
+            }
+            {
+                streamingUrl && externalDevices.map(({ id, name }) => (
+                    <Option
+                        key={id}
+                        icon={'ic_vlc'}
+                        label={t('PLAYER_PLAY_IN', { device: name })}
+                        deviceId={id}
+                        disabled={stream === null}
+                        onClick={onExternalDeviceRequested}
+                    />
+                ))
+            }
         </div>
     );
 };
 
 OptionsMenu.propTypes = {
     className: PropTypes.string,
-    stream: PropTypes.object
+    stream: PropTypes.object,
+    playbackDevices: PropTypes.array
 };
 
 module.exports = OptionsMenu;
